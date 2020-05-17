@@ -16,18 +16,27 @@ class RecipesController < ApplicationController
     @recipe = Recipe.new(recipe_params)
     # 誰が投稿したかわかるようにする
     @recipe.user_id = current_user.id
-    @recipe.save
-    redirect_to recipe_path(@recipe)
+    if @recipe.save
+      redirect_to recipe_path(@recipe), notice: '投稿に成功しました'
+    else
+      render :new
+    end
   end
 
   def edit
     @recipe = Recipe.find(params[:id])
+    if @recipe.user != current_user
+      redirect_to recipes_path
+    end
   end
 
   def update
     @recipe = Recipe.find(params[:id])
-    @recipe.update(recipe_params)
-    redirect_to recipe_path(@recipe)
+    if @recipe.update(recipe_params)
+      redirect_to recipe_path(@recipe), notice: '編集に成功しました'
+    else
+      render :edit
+    end
   end
 
   def destroy
